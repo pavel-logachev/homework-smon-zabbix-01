@@ -1,0 +1,18 @@
+captured_utc=2026-07-30T21:41:17Z
+versions:
+apache2	2.4.67-1~deb11u3
+postgresql	13+225+deb11u1
+zabbix-agent2	1:6.0.48-1+debian11
+zabbix-server-pgsql	1:6.0.48-1+debian11
+postgresql=active
+apache2=active
+zabbix-server=active
+zabbix-agent2=active
+frontend_http=200
+cloud_init=status: done
+failed_units=0
+listeners:
+127.0.0.1:80
+127.0.0.1:5432
+127.0.0.1:10050
+127.0.0.1:10051

@@ -1,117 +1,145 @@
-# Домашнее задание к занятию "`Название занятия`" - `Фамилия и имя студента`
+# Домашнее задание «Система мониторинга Zabbix»
 
+Практика выполнена на реальной временной инфраструктуре 30 июля 2026 года.
 
-### Инструкция по выполнению домашнего задания
+## Результат
 
-   1. Сделайте `fork` данного репозитория к себе в Github и переименуйте его по названию или номеру занятия, например, https://github.com/имя-вашего-репозитория/git-hw или  https://github.com/имя-вашего-репозитория/7-1-ansible-hw).
-   2. Выполните клонирование данного репозитория к себе на ПК с помощью команды `git clone`.
-   3. Выполните домашнее задание и заполните у себя локально этот файл README.md:
-      - впишите вверху название занятия и вашу фамилию и имя
-      - в каждом задании добавьте решение в требуемом виде (текст/код/скриншоты/ссылка)
-      - для корректного добавления скриншотов воспользуйтесь [инструкцией "Как вставить скриншот в шаблон с решением](https://github.com/netology-code/sys-pattern-homework/blob/main/screen-instruction.md)
-      - при оформлении используйте возможности языка разметки md (коротко об этом можно посмотреть в [инструкции  по MarkDown](https://github.com/netology-code/sys-pattern-homework/blob/main/md-instruction.md))
-   4. После завершения работы над домашним заданием сделайте коммит (`git commit -m "comment"`) и отправьте его на Github (`git push origin`);
-   5. В личном кабинете прикрепите и отправьте ссылку на решение в виде md-файла в вашем Github.
-   6. Любые вопросы по выполнению заданий спрашивайте в разделе “Вопросы по заданию” в личном кабинете.
-   
-Желаем успехов в выполнении домашнего задания!
-   
-### Дополнительные материалы, которые могут быть полезны для выполнения задания
+Развёрнуты и проверены:
 
-1. [Руководство по оформлению Markdown файлов](https://gist.github.com/Jekins/2bf2d0638163f1294637#Code)
+- Zabbix Server **6.0.48 LTS**;
+- PostgreSQL **13.23**;
+- Apache **2.4.67** и PHP frontend;
+- два Linux-хоста с Zabbix Agent 2;
+- шаблон `Linux by Zabbix agent active` на обоих хостах;
+- поступление значений от обоих агентов в `Monitoring → Latest data`.
 
----
+| Компонент | Размещение | Режим |
+|---|---|---|
+| Zabbix Server, PostgreSQL, Apache | временная Debian 11 VM | server и frontend слушают только loopback |
+| `netology-zabbix-01` | та же Debian 11 VM | системный Zabbix Agent 2, active checks |
+| `netology-agent-02` | отдельная Linux VM | изолированный Docker-контейнер, active checks |
 
-### Задание 1
+Второй агент соединялся с сервером через временный SSH-туннель. Порты `80`, `5432`, `10050` и `10051` не публиковались в интернет.
 
-`Приведите ответ в свободной форме........`
+## Установка Zabbix Server
 
-1. `Заполните здесь этапы выполнения, если требуется ....`
-2. `Заполните здесь этапы выполнения, если требуется ....`
-3. `Заполните здесь этапы выполнения, если требуется ....`
-4. `Заполните здесь этапы выполнения, если требуется ....`
-5. `Заполните здесь этапы выполнения, если требуется ....`
-6. 
+Для Debian 11 использована официальная ветка Zabbix 6.0 LTS:
 
-```
-Поле для вставки кода...
-....
-....
-....
-....
+```bash
+curl -fsSL \
+  'https://repo.zabbix.com/zabbix/6.0/debian/pool/main/z/zabbix-release/zabbix-release_latest_6.0+debian11_all.deb' \
+  -o /tmp/zabbix-release.deb
+sudo dpkg -i /tmp/zabbix-release.deb
+sudo apt-get update
+sudo apt-get install -y \
+  zabbix-server-pgsql \
+  zabbix-frontend-php \
+  zabbix-sql-scripts \
+  zabbix-agent2 \
+  postgresql apache2 libapache2-mod-php php-pgsql
 ```
 
-`При необходимости прикрепитe сюда скриншоты
-![Название скриншота 1](ссылка на скриншот 1)`
+База создавалась отдельным пользователем. Настоящий пароль сгенерирован на VM, в Git не сохранялся:
 
-
----
-
-### Задание 2
-
-`Приведите ответ в свободной форме........`
-
-1. `Заполните здесь этапы выполнения, если требуется ....`
-2. `Заполните здесь этапы выполнения, если требуется ....`
-3. `Заполните здесь этапы выполнения, если требуется ....`
-4. `Заполните здесь этапы выполнения, если требуется ....`
-5. `Заполните здесь этапы выполнения, если требуется ....`
-6. 
-
-```
-Поле для вставки кода...
-....
-....
-....
-....
+```bash
+sudo -u postgres psql -c "CREATE USER zabbix WITH PASSWORD '<DB_PASSWORD>'"
+sudo -u postgres createdb -O zabbix zabbix
+zcat /usr/share/zabbix-sql-scripts/postgresql/server.sql.gz \
+  | sudo -u zabbix psql zabbix
 ```
 
-`При необходимости прикрепитe сюда скриншоты
-![Название скриншота 2](ссылка на скриншот 2)`
+Ключевые параметры `/etc/zabbix/zabbix_server.conf`:
 
-
----
-
-### Задание 3
-
-`Приведите ответ в свободной форме........`
-
-1. `Заполните здесь этапы выполнения, если требуется ....`
-2. `Заполните здесь этапы выполнения, если требуется ....`
-3. `Заполните здесь этапы выполнения, если требуется ....`
-4. `Заполните здесь этапы выполнения, если требуется ....`
-5. `Заполните здесь этапы выполнения, если требуется ....`
-6. 
-
-```
-Поле для вставки кода...
-....
-....
-....
-....
+```ini
+DBName=zabbix
+DBUser=zabbix
+DBPassword=<DB_PASSWORD>
+ListenIP=127.0.0.1
 ```
 
-`При необходимости прикрепитe сюда скриншоты
-![Название скриншота](ссылка на скриншот)`
+Apache получил alias `/zabbix` на `/usr/share/zabbix`, а frontend-конфигурация была сохранена в `/etc/zabbix/web/zabbix.conf.php`. После проверки конфигурации запущены сервисы:
 
-### Задание 4
-
-`Приведите ответ в свободной форме........`
-
-1. `Заполните здесь этапы выполнения, если требуется ....`
-2. `Заполните здесь этапы выполнения, если требуется ....`
-3. `Заполните здесь этапы выполнения, если требуется ....`
-4. `Заполните здесь этапы выполнения, если требуется ....`
-5. `Заполните здесь этапы выполнения, если требуется ....`
-6. 
-
-```
-Поле для вставки кода...
-....
-....
-....
-....
+```bash
+sudo apache2ctl configtest
+sudo systemctl enable --now postgresql apache2 zabbix-server zabbix-agent2
 ```
 
-`При необходимости прикрепитe сюда скриншоты
-![Название скриншота](ссылка на скриншот)`
+Фактические версии, состояния сервисов и bind-адреса: [`evidence/service-status.txt`](evidence/service-status.txt).
+
+## Первый агент
+
+Agent 2 установлен как systemd-сервис на временной Debian VM:
+
+```ini
+Hostname=netology-zabbix-01
+Server=127.0.0.1
+ServerActive=127.0.0.1
+ListenIP=127.0.0.1
+```
+
+Лог успешного запуска: [`evidence/agent-vm.log`](evidence/agent-vm.log).
+
+## Второй агент
+
+Второй Agent 2 запущен отдельным Compose-проектом `netology-zabbix-01`:
+
+```bash
+cd /srv/netology-labs/zabbix-01/agent2
+docker compose -p netology-zabbix-01 config -q
+docker compose -p netology-zabbix-01 up -d
+```
+
+Конфигурация находится в каталоге [`agent2/`](agent2/). Контейнер:
+
+- не публикует порты;
+- работает в active mode;
+- ограничен `0.25 CPU`, `128 MiB RAM`, `100 PIDs`;
+- использует read-only root filesystem;
+- соединяется с `127.0.0.1:11051`, перенаправленным SSH-туннелем на Zabbix Server.
+
+Лог и runtime-проверка: [`evidence/agent-production.log`](evidence/agent-production.log).
+
+## Хосты в Zabbix
+
+Через Zabbix JSON-RPC API созданы два enabled-хоста в группе `Linux servers`:
+
+1. `netology-zabbix-01`;
+2. `netology-agent-02`.
+
+Обоим назначен шаблон `Linux by Zabbix agent active`.
+
+![Configuration — Hosts](evidence/hosts.png)
+
+## Latest data
+
+После запуска active checks значения появились у обоих хостов. На скриншоте видны, в частности, `Available memory`, `Context switches per second`, их `Last check` и `Last value`.
+
+![Monitoring — Latest data](evidence/latest-data.png)
+
+Дополнительная машинная проверка через API: [`evidence/api-verification.json`](evidence/api-verification.json). В ней сохранены версия Zabbix, статусы двух хостов, назначенные шаблоны и примеры последних значений; пароль и API-токен в файл не попали.
+
+## Проверка
+
+```text
+Zabbix API: 6.0.48
+PostgreSQL: active
+Apache: active
+Zabbix Server: active
+Zabbix Agent 2 (VM): active
+Zabbix Agent 2 (container): running, restart=0
+Latest data: значения получены от двух хостов
+Public ports у контейнера: отсутствуют
+```
+
+## Очистка временных ресурсов
+
+После фиксации evidence и сдачи задания удаляются только ресурсы этой практики:
+
+```bash
+cd /srv/netology-labs/zabbix-01/agent2
+docker compose -p netology-zabbix-01 down --volumes --remove-orphans
+sudo systemctl stop netology-zabbix-tunnel.service
+sudo rm -rf /srv/netology-labs/zabbix-01
+```
+
+Временная Debian VM удаляется отдельно в Yandex Cloud. Другие контейнеры, сети, volumes и проекты не затрагиваются.

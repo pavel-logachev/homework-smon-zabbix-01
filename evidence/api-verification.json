@@ -1,0 +1,123 @@
+{
+  "zabbix_version": "6.0.48",
+  "hosts": [
+    {
+      "hostid": "10643",
+      "host": "netology-zabbix-01",
+      "status": "enabled",
+      "templates": [
+        "Linux by Zabbix agent active"
+      ],
+      "latest_values_count_in_sample": 30,
+      "latest_sample": [
+        {
+          "name": "Linux: System local time",
+          "key": "system.localtime",
+          "lastvalue": "1785447761",
+          "lastclock": "1785447762"
+        },
+        {
+          "name": "Linux: CPU user time",
+          "key": "system.cpu.util[,user]",
+          "lastvalue": "0.458754",
+          "lastclock": "1785447760"
+        },
+        {
+          "name": "Linux: CPU system time",
+          "key": "system.cpu.util[,system]",
+          "lastvalue": "0.200234",
+          "lastclock": "1785447759"
+        },
+        {
+          "name": "Linux: Free swap space",
+          "key": "system.swap.size[,free]",
+          "lastvalue": "0",
+          "lastclock": "1785447758"
+        },
+        {
+          "name": "Linux: Number of logged in users",
+          "key": "system.users.num",
+          "lastvalue": "0",
+          "lastclock": "1785447755"
+        },
+        {
+          "name": "Linux: System uptime",
+          "key": "system.uptime",
+          "lastvalue": "1986",
+          "lastclock": "1785447754"
+        },
+        {
+          "name": "Linux: CPU interrupt time",
+          "key": "system.cpu.util[,interrupt]",
+          "lastvalue": "0",
+          "lastclock": "1785447732"
+        },
+        {
+          "name": "Linux: CPU idle time",
+          "key": "system.cpu.util[,idle]",
+          "lastvalue": "98.865059",
+          "lastclock": "1785447731"
+        }
+      ]
+    },
+    {
+      "hostid": "10644",
+      "host": "netology-agent-02",
+      "status": "enabled",
+      "templates": [
+        "Linux by Zabbix agent active"
+      ],
+      "latest_values_count_in_sample": 33,
+      "latest_sample": [
+        {
+          "name": "Linux: CPU user time",
+          "key": "system.cpu.util[,user]",
+          "lastvalue": "1.634001",
+          "lastclock": "1785447766"
+        },
+        {
+          "name": "Linux: CPU system time",
+          "key": "system.cpu.util[,system]",
+          "lastvalue": "0.789837",
+          "lastclock": "1785447765"
+        },
+        {
+          "name": "Linux: Free swap space",
+          "key": "system.swap.size[,free]",
+          "lastvalue": "1073737728",
+          "lastclock": "1785447764"
+        },
+        {
+          "name": "Linux: Number of logged in users",
+          "key": "system.users.num",
+          "lastvalue": "0",
+          "lastclock": "1785447761"
+        },
+        {
+          "name": "Linux: System uptime",
+          "key": "system.uptime",
+          "lastvalue": "439532",
+          "lastclock": "1785447760"
+        },
+        {
+          "name": "Linux: CPU interrupt time",
+          "key": "system.cpu.util[,interrupt]",
+          "lastvalue": "0",
+          "lastclock": "1785447738"
+        },
+        {
+          "name": "Linux: CPU idle time",
+          "key": "system.cpu.util[,idle]",
+          "lastvalue": "97.605216",
+          "lastclock": "1785447737"
+        },
+        {
+          "name": "Linux: CPU utilization",
+          "key": "system.cpu.util",
+          "lastvalue": "2.3947840000000014",
+          "lastclock": "1785447737"
+        }
+      ]
+    }
+  ]
+}

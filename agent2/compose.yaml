@@ -1,0 +1,17 @@
+services:
+  agent2:
+    image: zabbix/zabbix-agent2:alpine-6.0-latest
+    container_name: netology-zabbix-agent2
+    entrypoint: ["/usr/sbin/zabbix_agent2"]
+    command: ["-c", "/etc/zabbix/zabbix_agent2.conf", "-f"]
+    network_mode: host
+    pid: host
+    restart: unless-stopped
+    cpus: 0.25
+    mem_limit: 128m
+    pids_limit: 100
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    volumes:
+      - ./zabbix_agent2.conf:/etc/zabbix/zabbix_agent2.conf:ro

@@ -141,9 +141,9 @@ Latest data: значения получены от двух хостов
 Public ports у контейнера: отсутствуют
 ```
 
-## Очистка временных ресурсов
+## Очистка временных ресурсов — выполнено
 
-После фиксации evidence и сдачи задания удаляются только ресурсы этой практики:
+После фиксации evidence, публикации решения и подтверждения Netology `passed: true` были удалены только ресурсы этой практики:
 
 ```bash
 cd /srv/netology-labs/zabbix-01/agent2
@@ -152,4 +152,16 @@ sudo systemctl stop netology-zabbix-tunnel.service
 sudo rm -rf /srv/netology-labs/zabbix-01
 ```
 
-Временная Debian VM удаляется отдельно в Yandex Cloud. Другие контейнеры, сети, volumes и проекты не затрагиваются.
+Временная Debian VM удалена отдельно в Yandex Cloud. Другие контейнеры, сети, volumes и проекты не затронуты.
+
+Проверка после очистки:
+
+```text
+production containers running: 30 (как до практики)
+netology-zabbix-agent2 containers: 0
+netology-zabbix-01 networks: 0
+netology-zabbix-01 volumes: 0
+local tunnel port 11051: closed
+/srv/netology-labs/zabbix-01: absent
+Yandex VM netology-zabbix-01: absent
+```

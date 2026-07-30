@@ -1,5 +1,7 @@
 # Домашнее задание «Система мониторинга Zabbix»
 
+**Выполнил: Павел Логачев**
+
 Практика выполнена на реальной временной инфраструктуре 30 июля 2026 года.
 
 ## Результат
@@ -66,6 +68,10 @@ sudo systemctl enable --now postgresql apache2 zabbix-server zabbix-agent2
 
 Фактические версии, состояния сервисов и bind-адреса: [`evidence/service-status.txt`](evidence/service-status.txt).
 
+Форма авторизации установленного Zabbix frontend:
+
+![Zabbix — форма авторизации](evidence/login.png)
+
 ## Первый агент
 
 Agent 2 установлен как systemd-сервис на временной Debian VM:
@@ -77,7 +83,11 @@ ServerActive=127.0.0.1
 ListenIP=127.0.0.1
 ```
 
-Лог успешного запуска: [`evidence/agent-vm.log`](evidence/agent-vm.log).
+В реальном DebugLevel 4 зафиксированы создание active exporter tasks, регулярный `upload history data`, запрос `agent.ping` от `127.0.0.1` и успешный ответ `1`. После фиксации evidence уровень логирования возвращён на 3.
+
+![Zabbix Agent 2 — лог связи с сервером](evidence/agent-log.png)
+
+Исходные строки: [`evidence/agent-connection.log`](evidence/agent-connection.log). Системный журнал запуска: [`evidence/agent-vm.log`](evidence/agent-vm.log).
 
 ## Второй агент
 

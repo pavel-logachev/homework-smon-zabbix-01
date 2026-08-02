@@ -1,0 +1,85 @@
+name: netology-zabbix-02
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: zabbix
+      POSTGRES_USER: zabbix
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zabbix -d zabbix"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks: [lab]
+
+  zabbix-server:
+    image: zabbix/zabbix-server-pgsql:alpine-6.0-latest
+    environment:
+      DB_SERVER_HOST: postgres
+      POSTGRES_DB: zabbix
+      POSTGRES_USER: zabbix
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      ZBX_STARTPOLLERS: 5
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:10051:10051"
+    networks: [lab]
+
+  zabbix-web:
+    image: zabbix/zabbix-web-nginx-pgsql:alpine-6.0-latest
+    environment:
+      DB_SERVER_HOST: postgres
+      POSTGRES_DB: zabbix
+      POSTGRES_USER: zabbix
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      ZBX_SERVER_HOST: zabbix-server
+      PHP_TZ: Europe/Moscow
+    depends_on:
+      postgres:
+        condition: service_healthy
+      zabbix-server:
+        condition: service_started
+    ports:
+      - "127.0.0.1:18084:8080"
+    networks: [lab]
+
+  agent-1:
+    image: zabbix/zabbix-agent2:alpine-6.0-latest
+    hostname: logachevpa-1
+    environment:
+      ZBX_HOSTNAME: logachevpa-1
+      ZBX_SERVER_HOST: zabbix-server
+      ZBX_SERVER_ACTIVE: zabbix-server
+    depends_on:
+      zabbix-server:
+        condition: service_started
+    networks:
+      lab:
+        aliases: [logachevpa-1]
+
+  agent-2:
+    image: zabbix/zabbix-agent2:alpine-6.0-latest
+    hostname: logachevpa-2
+    environment:
+      ZBX_HOSTNAME: logachevpa-2
+      ZBX_SERVER_HOST: zabbix-server
+      ZBX_SERVER_ACTIVE: zabbix-server
+    depends_on:
+      zabbix-server:
+        condition: service_started
+    networks:
+      lab:
+        aliases: [logachevpa-2]
+
+networks:
+  lab:
+    driver: bridge
+
+volumes:
+  postgres-data:

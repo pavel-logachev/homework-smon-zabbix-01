@@ -1,167 +1,103 @@
-# Домашнее задание «Система мониторинга Zabbix»
+# Домашнее задание «Система мониторинга Zabbix. Часть 2»
 
-**Выполнил: Павел Логачев**
+**Студент:** Павел Алексеевич Логачев
 
-Практика выполнена на реальной временной инфраструктуре 30 июля 2026 года.
+**Поток:** ARZ-8
 
-## Результат
+**Дата выполнения:** 2 августа 2026 года
 
-Развёрнуты и проверены:
+## Стенд
 
-- Zabbix Server **6.0.48 LTS**;
-- PostgreSQL **13.23**;
-- Apache **2.4.67** и PHP frontend;
-- два Linux-хоста с Zabbix Agent 2;
-- шаблон `Linux by Zabbix agent active` на обоих хостах;
-- поступление значений от обоих агентов в `Monitoring → Latest data`.
-
-| Компонент | Размещение | Режим |
-|---|---|---|
-| Zabbix Server, PostgreSQL, Apache | временная Debian 11 VM | server и frontend слушают только loopback |
-| `netology-zabbix-01` | та же Debian 11 VM | системный Zabbix Agent 2, active checks |
-| `netology-agent-02` | отдельная Linux VM | изолированный Docker-контейнер, active checks |
-
-Второй агент соединялся с сервером через временный SSH-туннель. Порты `80`, `5432`, `10050` и `10051` не публиковались в интернет.
-
-## Установка Zabbix Server
-
-Для Debian 11 использована официальная ветка Zabbix 6.0 LTS:
-
-```bash
-curl -fsSL \
-  'https://repo.zabbix.com/zabbix/6.0/debian/pool/main/z/zabbix-release/zabbix-release_latest_6.0+debian11_all.deb' \
-  -o /tmp/zabbix-release.deb
-sudo dpkg -i /tmp/zabbix-release.deb
-sudo apt-get update
-sudo apt-get install -y \
-  zabbix-server-pgsql \
-  zabbix-frontend-php \
-  zabbix-sql-scripts \
-  zabbix-agent2 \
-  postgresql apache2 libapache2-mod-php php-pgsql
-```
-
-База создавалась отдельным пользователем. Настоящий пароль сгенерирован на VM, в Git не сохранялся:
-
-```bash
-sudo -u postgres psql -c "CREATE USER zabbix WITH PASSWORD '<DB_PASSWORD>'"
-sudo -u postgres createdb -O zabbix zabbix
-zcat /usr/share/zabbix-sql-scripts/postgresql/server.sql.gz \
-  | sudo -u zabbix psql zabbix
-```
-
-Ключевые параметры `/etc/zabbix/zabbix_server.conf`:
-
-```ini
-DBName=zabbix
-DBUser=zabbix
-DBPassword=<DB_PASSWORD>
-ListenIP=127.0.0.1
-```
-
-Apache получил alias `/zabbix` на `/usr/share/zabbix`, а frontend-конфигурация была сохранена в `/etc/zabbix/web/zabbix.conf.php`. После проверки конфигурации запущены сервисы:
-
-```bash
-sudo apache2ctl configtest
-sudo systemctl enable --now postgresql apache2 zabbix-server zabbix-agent2
-```
-
-Фактические версии, состояния сервисов и bind-адреса: [`evidence/service-status.txt`](evidence/service-status.txt).
-
-Форма авторизации установленного Zabbix frontend:
-
-![Zabbix — форма авторизации](evidence/login.png)
-
-## Первый агент
-
-Agent 2 установлен как systemd-сервис на временной Debian VM:
-
-```ini
-Hostname=netology-zabbix-01
-Server=127.0.0.1
-ServerActive=127.0.0.1
-ListenIP=127.0.0.1
-```
-
-В реальном DebugLevel 4 зафиксированы создание active exporter tasks, регулярный `upload history data`, запрос `agent.ping` от `127.0.0.1` и успешный ответ `1`. После фиксации evidence уровень логирования возвращён на 3.
-
-![Zabbix Agent 2 — лог связи с сервером](evidence/agent-log.png)
-
-Исходные строки: [`evidence/agent-connection.log`](evidence/agent-connection.log). Системный журнал запуска: [`evidence/agent-vm.log`](evidence/agent-vm.log).
-
-## Второй агент
-
-Второй Agent 2 запущен отдельным Compose-проектом `netology-zabbix-01`:
-
-```bash
-cd /srv/netology-labs/zabbix-01/agent2
-docker compose -p netology-zabbix-01 config -q
-docker compose -p netology-zabbix-01 up -d
-```
-
-Конфигурация находится в каталоге [`agent2/`](agent2/). Контейнер:
-
-- не публикует порты;
-- работает в active mode;
-- ограничен `0.25 CPU`, `128 MiB RAM`, `100 PIDs`;
-- использует read-only root filesystem;
-- соединяется с `127.0.0.1:11051`, перенаправленным SSH-туннелем на Zabbix Server.
-
-Лог и runtime-проверка: [`evidence/agent-production.log`](evidence/agent-production.log).
-
-## Хосты в Zabbix
-
-Через Zabbix JSON-RPC API созданы два enabled-хоста в группе `Linux servers`:
-
-1. `netology-zabbix-01`;
-2. `netology-agent-02`.
-
-Обоим назначен шаблон `Linux by Zabbix agent active`.
-
-![Configuration — Hosts](evidence/hosts.png)
-
-## Latest data
-
-После запуска active checks значения появились у обоих хостов. На скриншоте видны, в частности, `Available memory`, `Context switches per second`, их `Last check` и `Last value`.
-
-![Monitoring — Latest data](evidence/latest-data.png)
-
-Дополнительная машинная проверка через API: [`evidence/api-verification.json`](evidence/api-verification.json). В ней сохранены версия Zabbix, статусы двух хостов, назначенные шаблоны и примеры последних значений; пароль и API-токен в файл не попали.
-
-## Проверка
+Задание выполнено на воспроизводимом изолированном стенде Zabbix 6.0.48:
 
 ```text
-Zabbix API: 6.0.48
-PostgreSQL: active
-Apache: active
-Zabbix Server: active
-Zabbix Agent 2 (VM): active
-Zabbix Agent 2 (container): running, restart=0
-Latest data: значения получены от двух хостов
-Public ports у контейнера: отсутствуют
+Browser -> 127.0.0.1:18084 -> Zabbix Web
+                                  |
+PostgreSQL <- Zabbix Server ------+----> logachevpa-1 (Agent 2)
+                                  +----> logachevpa-2 (Agent 2)
 ```
 
-## Очистка временных ресурсов — выполнено
+Все сервисы работают в отдельной Docker Compose network. Frontend и Zabbix Server опубликованы только на loopback; Agent 2 не публикует порт `10050` на хост. Два агента являются отдельными Linux hosts в приватной сети стенда. Конфигурация не использует платные облачные ресурсы и не затрагивает production.
 
-После фиксации evidence, публикации решения и подтверждения Netology `passed: true` были удалены только ресурсы этой практики:
+Файлы для воспроизведения:
+
+- [`compose.yaml`](compose.yaml) — PostgreSQL, Zabbix Server, frontend и два Agent 2;
+- [`scripts/configure_zabbix.py`](scripts/configure_zabbix.py) — идемпотентное создание template, items, hosts, graphs и dashboard через Zabbix API;
+- [`.env.example`](.env.example) — пример локального environment без секретов;
+- [`evidence/api-verification.json`](evidence/api-verification.json) — итоговая API-проверка;
+- [`evidence/service-status.txt`](evidence/service-status.txt) — состояние Compose и прямые `zabbix_get` проверки.
+
+## Задание 1
+
+Создан собственный template **Netology CPU and RAM** с двумя calculated items:
+
+| Item | Key | Формула | Интервал |
+|---|---|---|---:|
+| CPU utilization | `netology.cpu.util` | `100-last(//system.cpu.util[,idle])` | 30 s |
+| RAM utilization | `netology.ram.util` | `100-last(//vm.memory.size[pavailable])` | 30 s |
+
+Оба item возвращают загрузку в процентах. Базовые значения поступают из стандартного template `Linux by Zabbix agent`.
+
+![Задание 1 — template CPU и RAM](evidence/task1-template.png)
+
+## Задания 2–3
+
+Добавлены два хоста:
+
+- `logachevpa-1`, interface `agent-1:10050`;
+- `logachevpa-2`, interface `agent-2:10050`.
+
+К каждому хосту привязаны:
+
+1. `Linux by Zabbix agent`;
+2. `Netology CPU and RAM`.
+
+На скриншоте у обоих хостов виден зелёный статус **ZBX**.
+
+![Задания 2–3 — hosts, templates и зелёный ZBX](evidence/task2-3-hosts.png)
+
+Получение свежих значений CPU и RAM от обоих хостов дополнительно проверено в **Monitoring → Latest data**:
+
+![Latest Data обоих хостов](evidence/latest-data.png)
+
+Машиночитаемая проверка в [`api-verification.json`](evidence/api-verification.json) подтверждает для обоих interfaces `available: "1"`, отсутствие ошибок и четыре свежих значения со `state: "0"`.
+
+## Задание 4
+
+Создан custom dashboard **Netology Zabbix Part 2**. На нём размещены два SVG graph widgets — по одному на каждый хост. Каждый график содержит:
+
+- CPU utilization — красная линия;
+- RAM utilization — зелёная линия.
+
+![Задание 4 — custom dashboard](evidence/task4-dashboard.png)
+
+## Проверка и воспроизведение
 
 ```bash
-cd /srv/netology-labs/zabbix-01/agent2
-docker compose -p netology-zabbix-01 down --volumes --remove-orphans
-sudo systemctl stop netology-zabbix-tunnel.service
-sudo rm -rf /srv/netology-labs/zabbix-01
+cp .env.example .env
+# Задать уникальный локальный POSTGRES_PASSWORD в .env
+docker compose config --quiet
+docker compose up -d
+python scripts/configure_zabbix.py
 ```
 
-Временная Debian VM удалена отдельно в Yandex Cloud. Другие контейнеры, сети, volumes и проекты не затронуты.
-
-Проверка после очистки:
+Успешный итог API-скрипта:
 
 ```text
-production containers running: 30 (как до практики)
-netology-zabbix-agent2 containers: 0
-netology-zabbix-01 networks: 0
-netology-zabbix-01 volumes: 0
-local tunnel port 11051: closed
-/srv/netology-labs/zabbix-01: absent
-Yandex VM netology-zabbix-01: absent
+Zabbix API 6.0.48 is ready
+{"templateid":"10643","hostids":{"logachevpa-1":"10644","logachevpa-2":"10645"},"dashboardid":"369","latest_values":4}
 ```
+
+Прямой `zabbix_get` с Zabbix Server к каждому Agent 2 подтвердил:
+
+- `agent.ping = 1`;
+- получение `system.cpu.util[,idle]`;
+- получение `vm.memory.size[pused]`.
+
+После проверки стенд удаляется scoped-командой:
+
+```bash
+docker compose down -v
+```
+
+В решении нет конфиденциальных данных. Локальный `.env` исключён из Git.

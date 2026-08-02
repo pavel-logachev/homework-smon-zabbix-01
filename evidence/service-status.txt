@@ -1,18 +1,19 @@
-captured_utc=2026-07-30T21:41:17Z
-versions:
-apache2	2.4.67-1~deb11u3
-postgresql	13+225+deb11u1
-zabbix-agent2	1:6.0.48-1+debian11
-zabbix-server-pgsql	1:6.0.48-1+debian11
-postgresql=active
-apache2=active
-zabbix-server=active
-zabbix-agent2=active
-frontend_http=200
-cloud_init=status: done
-failed_units=0
-listeners:
-127.0.0.1:80
-127.0.0.1:5432
-127.0.0.1:10050
-127.0.0.1:10051
+Docker Compose services
+=======================
+NAME                                 IMAGE                                             COMMAND                  SERVICE         CREATED          STATUS                    PORTS
+netology-zabbix-02-agent-1-1         zabbix/zabbix-agent2:alpine-6.0-latest            "/sbin/tini -- /usr/…"   agent-1         7 minutes ago    Up 7 minutes              10050/tcp, 31999/tcp
+netology-zabbix-02-agent-2-1         zabbix/zabbix-agent2:alpine-6.0-latest            "/sbin/tini -- /usr/…"   agent-2         7 minutes ago    Up 7 minutes              10050/tcp, 31999/tcp
+netology-zabbix-02-postgres-1        postgres:15-alpine                                "docker-entrypoint.s…"   postgres        13 minutes ago   Up 13 minutes (healthy)   5432/tcp
+netology-zabbix-02-zabbix-server-1   zabbix/zabbix-server-pgsql:alpine-6.0-latest      "/sbin/tini -- /usr/…"   zabbix-server   13 minutes ago   Up 13 minutes             127.0.0.1:10051->10051/tcp
+netology-zabbix-02-zabbix-web-1      zabbix/zabbix-web-nginx-pgsql:alpine-6.0-latest   "docker-entrypoint.sh"   zabbix-web      13 minutes ago   Up 13 minutes (healthy)   127.0.0.1:18084->8080/tcp
+
+Direct server-to-agent checks
+=============================
+===agent-1===
+1
+99.779247
+3.627444
+===agent-2===
+1
+99.777473
+3.627444

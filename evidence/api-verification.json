@@ -1,121 +1,263 @@
 {
+  "verified_at_utc": "2026-08-02T15:11:05.543393+00:00",
   "zabbix_version": "6.0.48",
+  "template": [
+    {
+      "templateid": "10643",
+      "host": "Netology CPU and RAM",
+      "name": "Netology CPU and RAM",
+      "items": [
+        {
+          "itemid": "47914",
+          "name": "CPU utilization",
+          "key_": "netology.cpu.util",
+          "units": "%",
+          "delay": "30s"
+        },
+        {
+          "itemid": "47915",
+          "name": "RAM utilization",
+          "key_": "netology.ram.util",
+          "units": "%",
+          "delay": "30s"
+        }
+      ]
+    }
+  ],
   "hosts": [
     {
-      "hostid": "10643",
-      "host": "netology-zabbix-01",
-      "status": "enabled",
-      "templates": [
-        "Linux by Zabbix agent active"
+      "hostid": "10644",
+      "host": "logachevpa-1",
+      "name": "logachevpa-1",
+      "status": "0",
+      "parentTemplates": [
+        {
+          "templateid": "10001",
+          "host": "Linux by Zabbix agent",
+          "name": "Linux by Zabbix agent"
+        },
+        {
+          "templateid": "10643",
+          "host": "Netology CPU and RAM",
+          "name": "Netology CPU and RAM"
+        }
       ],
-      "latest_values_count_in_sample": 30,
-      "latest_sample": [
+      "interfaces": [
         {
-          "name": "Linux: System local time",
-          "key": "system.localtime",
-          "lastvalue": "1785447761",
-          "lastclock": "1785447762"
-        },
-        {
-          "name": "Linux: CPU user time",
-          "key": "system.cpu.util[,user]",
-          "lastvalue": "0.458754",
-          "lastclock": "1785447760"
-        },
-        {
-          "name": "Linux: CPU system time",
-          "key": "system.cpu.util[,system]",
-          "lastvalue": "0.200234",
-          "lastclock": "1785447759"
-        },
-        {
-          "name": "Linux: Free swap space",
-          "key": "system.swap.size[,free]",
-          "lastvalue": "0",
-          "lastclock": "1785447758"
-        },
-        {
-          "name": "Linux: Number of logged in users",
-          "key": "system.users.num",
-          "lastvalue": "0",
-          "lastclock": "1785447755"
-        },
-        {
-          "name": "Linux: System uptime",
-          "key": "system.uptime",
-          "lastvalue": "1986",
-          "lastclock": "1785447754"
-        },
-        {
-          "name": "Linux: CPU interrupt time",
-          "key": "system.cpu.util[,interrupt]",
-          "lastvalue": "0",
-          "lastclock": "1785447732"
-        },
-        {
-          "name": "Linux: CPU idle time",
-          "key": "system.cpu.util[,idle]",
-          "lastvalue": "98.865059",
-          "lastclock": "1785447731"
+          "interfaceid": "31",
+          "dns": "agent-1",
+          "ip": "",
+          "port": "10050",
+          "available": "1",
+          "error": ""
         }
       ]
     },
     {
-      "hostid": "10644",
-      "host": "netology-agent-02",
-      "status": "enabled",
-      "templates": [
-        "Linux by Zabbix agent active"
+      "hostid": "10645",
+      "host": "logachevpa-2",
+      "name": "logachevpa-2",
+      "status": "0",
+      "parentTemplates": [
+        {
+          "templateid": "10001",
+          "host": "Linux by Zabbix agent",
+          "name": "Linux by Zabbix agent"
+        },
+        {
+          "templateid": "10643",
+          "host": "Netology CPU and RAM",
+          "name": "Netology CPU and RAM"
+        }
       ],
-      "latest_values_count_in_sample": 33,
-      "latest_sample": [
+      "interfaces": [
         {
-          "name": "Linux: CPU user time",
-          "key": "system.cpu.util[,user]",
-          "lastvalue": "1.634001",
-          "lastclock": "1785447766"
-        },
+          "interfaceid": "32",
+          "dns": "agent-2",
+          "ip": "",
+          "port": "10050",
+          "available": "1",
+          "error": ""
+        }
+      ]
+    }
+  ],
+  "latest_data": [
+    {
+      "itemid": "47956",
+      "hostid": "10644",
+      "name": "CPU utilization",
+      "key_": "netology.cpu.util",
+      "units": "%",
+      "state": "0",
+      "lastclock": "1785683446",
+      "lastvalue": "0.210645999999997"
+    },
+    {
+      "itemid": "48025",
+      "hostid": "10645",
+      "name": "CPU utilization",
+      "key_": "netology.cpu.util",
+      "units": "%",
+      "state": "0",
+      "lastclock": "1785683455",
+      "lastvalue": "0.20908799999999417"
+    },
+    {
+      "itemid": "47957",
+      "hostid": "10644",
+      "name": "RAM utilization",
+      "key_": "netology.ram.util",
+      "units": "%",
+      "state": "0",
+      "lastclock": "1785683447",
+      "lastvalue": "3.5148070000000047"
+    },
+    {
+      "itemid": "48026",
+      "hostid": "10645",
+      "name": "RAM utilization",
+      "key_": "netology.ram.util",
+      "units": "%",
+      "state": "0",
+      "lastclock": "1785683456",
+      "lastvalue": "3.518519999999995"
+    }
+  ],
+  "graphs": {
+    "logachevpa-1": "3173",
+    "logachevpa-2": "3174"
+  },
+  "dashboard": [
+    {
+      "dashboardid": "369",
+      "name": "Netology Zabbix Part 2",
+      "userid": "1",
+      "private": "1",
+      "display_period": "30",
+      "auto_start": "0",
+      "uuid": "",
+      "pages": [
         {
-          "name": "Linux: CPU system time",
-          "key": "system.cpu.util[,system]",
-          "lastvalue": "0.789837",
-          "lastclock": "1785447765"
-        },
-        {
-          "name": "Linux: Free swap space",
-          "key": "system.swap.size[,free]",
-          "lastvalue": "1073737728",
-          "lastclock": "1785447764"
-        },
-        {
-          "name": "Linux: Number of logged in users",
-          "key": "system.users.num",
-          "lastvalue": "0",
-          "lastclock": "1785447761"
-        },
-        {
-          "name": "Linux: System uptime",
-          "key": "system.uptime",
-          "lastvalue": "439532",
-          "lastclock": "1785447760"
-        },
-        {
-          "name": "Linux: CPU interrupt time",
-          "key": "system.cpu.util[,interrupt]",
-          "lastvalue": "0",
-          "lastclock": "1785447738"
-        },
-        {
-          "name": "Linux: CPU idle time",
-          "key": "system.cpu.util[,idle]",
-          "lastvalue": "97.605216",
-          "lastclock": "1785447737"
-        },
-        {
-          "name": "Linux: CPU utilization",
-          "key": "system.cpu.util",
-          "lastvalue": "2.3947840000000014",
-          "lastclock": "1785447737"
+          "dashboard_pageid": "19913",
+          "name": "CPU and RAM",
+          "display_period": "30",
+          "widgets": [
+            {
+              "widgetid": "68426",
+              "type": "svggraph",
+              "name": "logachevpa-1: CPU and RAM",
+              "x": "0",
+              "y": "0",
+              "width": "12",
+              "height": "5",
+              "view_mode": "0",
+              "fields": [
+                {
+                  "type": "1",
+                  "name": "ds.hosts.0.0",
+                  "value": "logachevpa-1"
+                },
+                {
+                  "type": "1",
+                  "name": "ds.items.0.0",
+                  "value": "CPU utilization"
+                },
+                {
+                  "type": "1",
+                  "name": "ds.color.0",
+                  "value": "E53935"
+                },
+                {
+                  "type": "1",
+                  "name": "ds.hosts.1.0",
+                  "value": "logachevpa-1"
+                },
+                {
+                  "type": "1",
+                  "name": "ds.items.1.0",
+                  "value": "RAM utilization"
+                },
+                {
+                  "type": "1",
+                  "name": "ds.color.1",
+                  "value": "2E7D32"
+                },
+                {
+                  "type": "0",
+                  "name": "graph_time",
+                  "value": "1"
+                },
+                {
+                  "type": "1",
+                  "name": "time_from",
+                  "value": "now-1h"
+                },
+                {
+                  "type": "0",
+                  "name": "legend_lines",
+                  "value": "2"
+                }
+              ]
+            },
+            {
+              "widgetid": "68427",
+              "type": "svggraph",
+              "name": "logachevpa-2: CPU and RAM",
+              "x": "12",
+              "y": "0",
+              "width": "12",
+              "height": "5",
+              "view_mode": "0",
+              "fields": [
+                {
+                  "type": "1",
+                  "name": "ds.hosts.0.0",
+                  "value": "logachevpa-2"
+                },
+                {
+                  "type": "1",
+                  "name": "ds.items.0.0",
+                  "value": "CPU utilization"
+                },
+                {
+                  "type": "1",
+                  "name": "ds.color.0",
+                  "value": "E53935"
+                },
+                {
+                  "type": "1",
+                  "name": "ds.hosts.1.0",
+                  "value": "logachevpa-2"
+                },
+                {
+                  "type": "1",
+                  "name": "ds.items.1.0",
+                  "value": "RAM utilization"
+                },
+                {
+                  "type": "1",
+                  "name": "ds.color.1",
+                  "value": "2E7D32"
+                },
+                {
+                  "type": "0",
+                  "name": "graph_time",
+                  "value": "1"
+                },
+                {
+                  "type": "1",
+                  "name": "time_from",
+                  "value": "now-1h"
+                },
+                {
+                  "type": "0",
+                  "name": "legend_lines",
+                  "value": "2"
+                }
+              ]
+            }
+          ]
         }
       ]
     }
